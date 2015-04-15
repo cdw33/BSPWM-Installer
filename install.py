@@ -7,6 +7,7 @@
 ##################################################
 
 import os
+import sys #used for sys.exit() in debugging
 
 bspwm_git_dir = "https://github.com/baskerville/bspwm"
 sxhkd_git_dir = "https://github.com/baskerville/sxhkd"
@@ -14,11 +15,15 @@ xtitle_git_dir = "https://github.com/baskerville/xtitle"
 sutils_git_dir = "https://github.com/baskerville/sutils"
 lemonbar_git_dir = "https://github.com/LemonBoy/bar"
 
-panel_scripts_dir = ~/.config/panel
-bspwm_scripts_dir = ~/.config/bspwm
-sxkhd_scripts_dir = ~/.config/sxkhd
+panel_scripts_dir = "~/.config/panel"
+bspwm_scripts_dir = "~/.config/bspwm"
+sxkhd_scripts_dir = "~/.config/sxkhd"
 
-tmp_dir = /tmp/bspwm_installer
+tmp_dir = "/tmp/bspwm_installer"
+
+def mkdir(d):
+    if not os.path.exists(d):
+        os.makedirs(d)
 
 print "\nBSPWM Installer v0.1"
 print "Chris Wilson - 2015\n"
@@ -26,15 +31,10 @@ print "Chris Wilson - 2015\n"
 #Check necessary parameters are met
 #check for git && make && gcc (build-essential(?))
 
+
 #make directory for temp files
-def ensure_dir("tmp"):
-    
-    d = os.path.dirname(f)
-    if not os.path.exists(d):
-        os.makedirs(d)
-#os.mkdir("tmp")
-##os.chdir("tmp")
-#os.system("cd tmp")
+mkdir(tmp_dir)
+os.chdir(tmp_dir)
 
 #get source files via git
 print "Downloading Source..."
@@ -51,18 +51,19 @@ print "Download Complete\n"
 
 #Download any necessary dependencies
 print "Downloading Dependencies..."
-os.system("sudo apt-get install libasound2 xcb libxcb-util0-dev" \ 
-	  "libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev" \ 
-	  " libxcb-keysyms1-dev libxcb-xinerama0-dev")
+##add -qq for quiet install
+os.system("sudo apt-get install libasound2 xcb libxcb-util0-dev"
+     	  " libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev"
+	      " libxcb-keysyms1-dev libxcb-xinerama0-dev")
 print "Download Complete\n"
 
 #Use make to build source
 print "Building Source..."
-os.system("make -C bspwm/ && make install bspwm/")
-os.system("make -C sxhkd/ && make install sxhkd/")
-os.system("make -C xtitle/ && make install sutils/")
-os.system("make -C bspwm/ && make install bspwm/")
-os.system("make -C bar/ && make install bar/")
+os.system("make -C bspwm/ && sudo make -C bspwm/ install")
+os.system("make -C sxhkd/ && sudo make -C sxhkd/ install")
+os.system("make -C xtitle/ && sudo make -C sutils/ install")
+os.system("make -C bspwm/ && sudo make -C bspwm/ install")
+os.system("make -C bar/ && sudo make -C bar/ install")
 print "Build Complete\n"
 
 #move files to thier final location &
@@ -80,6 +81,6 @@ print "System Deploymen Complete\n"
 #cleanup my mess
 #os.rmdir("tmp") //file not empty (shutil.rmtree?)
 print "Cleaning Up..."
-os.system("cd .. && rm -rf tmp")
+os.system("rm -rf %s" %tmp_dir)
 print "Cleanup Complete.\n"
 print "BSPWM is now installed!"
