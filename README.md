@@ -1,8 +1,17 @@
 # BSPWM-Installer
 Installation script for BSPWM
 
+Dependencies
+Make sure you have the python installed
+if not:
+    sudo apt-get install python
+    pacman -S python
+
+How to run
+python install.py
+
+
 Distributions
-Currently uses apt-get, so only working in Debian based distros
 
 
 More Information
