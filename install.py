@@ -8,8 +8,7 @@
 
 import os
 #import shutil
-import sys #used for sys.exit() in debugging
-import subprocess
+import sys
 
 #Source URLs
 bspwm_git_dir = "https://github.com/baskerville/bspwm"
@@ -19,7 +18,8 @@ sutils_git_dir = "https://github.com/baskerville/sutils"
 lemonbar_git_dir = "https://github.com/LemonBoy/bar"
 
 #Directories
-#HOME
+installer_dir = sys.path[0]
+
 from os.path import expanduser
 home = expanduser("~")
 
@@ -29,6 +29,7 @@ config_dir = "%s/.config" %home
 panel_scripts_dir = "%s/.config/panel/" %home
 bspwm_scripts_dir = "%s/.config/bspwm/" %home
 sxhkd_scripts_dir = "%s/.config/sxhkd/" %home
+wallpapers_dir = "%s/wallpapers" %config_dir
 bspwmrc_dir = "bspwm/examples/bspwmrc"
 sxhkdrc_dir = "bspwm/examples/sxhkdrc"
 panel_config_dir = "bspwm/examples/panel/"
@@ -49,12 +50,14 @@ print (" BSPWM Installer v0.1 \n"
 pick_distro = input("Select Distribution\n"
                     "1.) Debian\n"
                     "2.) Arch\n"
+	 	    "3.) Ubuntu\n"
+		    "4.) Other\n"
 		    "> ")
 
-pick_panel = input("Select panel:\n"
-                   "1.) None\n"
-                   "2.) LemonBar\n"
-		   "> ")
+#pick_panel = input("Select panel:\n"
+#                   "1.) None\n"
+#                   "2.) LemonBar\n"
+#		   "> ")
 
 #Download dependencies
 print "Downloading Dependencies..."
@@ -80,7 +83,7 @@ os.system("git clone %s" %bspwm_git_dir);
 
 # There is a bug with the current bspwm build that throws
 # an Xserver connection error on some distros when using 
-# Make. This workaround checkouts and older version.
+# Make. This workaround checks out an older version.
 os.system("cd bspwm && git checkout b0e8dd3 && cd ..")
 
 os.system("git clone %s" %sxhkd_git_dir);
@@ -150,6 +153,12 @@ with open("%s/.xinitrc" %home, "a") as init_file:
 print "System Deployment Complete!\n"
 
 #Set Background
+print "Setting Background"
+
+mkdir("%s/wallpapers" %config_dir)
+
+os.system("cp %s/wallpapers/* %s" %(installer_dir, wallpapers_dir))
+
 if pick_distro == 1:
     with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
         bspwmrc_file.write("feh --bg-fill %s/wallpapers/debian.jpg" %config_dir)
@@ -162,7 +171,7 @@ elif pick_distro == 3:
 else:
     with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
         bspwmrc_file.write("feh --bg-fill %s/wallpapers/linux.jpg" %config_dir)
-print "Background Set!"
+print "Background Set!\n"
 
 
 #Cleanup Files
