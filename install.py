@@ -67,6 +67,7 @@ elif pick_distro == 2:
     os.system("sudo %s libxcb xcb-util xcb-util-keysyms "
               "xcb-util-wm" %arch_pm)
 print "Download Complete!\n"
+
         
 #Make dir for temp files
 print "Initializing Temporary Directory..."
@@ -145,7 +146,7 @@ if pick_panel == 2:
 #make/update file .xinitrc
 
 with open("%s/.xinitrc" %home, "w") as init_file:
-    init_file.write("sxhkd\n& exec bspwm")
+    init_file.write("sxhkd &\n exec bspwm")
 print "System Deployment Complete!\n"
 
 #Set Background
