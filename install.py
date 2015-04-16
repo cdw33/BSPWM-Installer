@@ -150,9 +150,20 @@ with open("%s/.xinitrc" %home, "a") as init_file:
 print "System Deployment Complete!\n"
 
 #Set Background
+if pick_distro == 1:
+    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+        bspwmrc_file.write("feh --bg-fill %s/wallpapers/debian.jpg" %config_dir)
+elif pick_distro == 2:
+    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+        bspwmrc.write("feh --bg-fill %s/wallpapers/arch.jpg" %confif_dir)
+elif pick_distro == 3:
+    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+        bspwmrc_file.write("feh --bg-fill %s/wallpapers/ubuntu.jpg" %config_dir)
+else:
+    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+        bspwmrc_file.write("feh --bg-fill %s/wallpapers/linux.jpg" %config_dir)
+print "Background Set!"
 
-with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-    bspwmrc_file.write("feh --bg-fill %s/wallpapers/debian.jpg" %config_dir)
 
 #Cleanup Files
 print "Cleaning Up..."
