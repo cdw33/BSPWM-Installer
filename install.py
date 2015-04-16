@@ -53,7 +53,7 @@ pick_distro = input("Select Distribution\n"
 	 	    "3.) Ubuntu\n"
 		    "4.) Other\n"
 		    "> ")
-
+pick_panel = 1
 #pick_panel = input("Select panel:\n"
 #                   "1.) None\n"
 #                   "2.) LemonBar\n"
