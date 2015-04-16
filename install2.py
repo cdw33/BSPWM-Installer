@@ -7,9 +7,9 @@
 ##################################################
 
 import os
-#import shutil
 import sys
 import platform
+import fileinput
 
 #Source URLs
 bspwm_git_dir = "https://github.com/baskerville/bspwm"
@@ -53,9 +53,19 @@ def end_install():
 
 def cleanup():
     #Cleanup Files
-    print "Cleaning Up..."  
+    print "Cleaning Up...",  
     os.system("rm -rf %s" %tmp_dir)
-    print "Cleanup Complete.\n"
+    print "Done"
+
+def replace_text(file,search_text,replace_text):
+    for line in fileinput.input(file, inplace=1):
+        if search_text in line:
+            line = line.replace(search_text,replace_text)
+        sys.stdout.write(line)
+
+def set_bg(distro):
+    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+        bspwmrc_file.write("feh --bg-fill %s/wallpapers/%s.jpg &" %(config_dir, distro))
 
 print ("\nBSPWM Installer v0.1 \n"
        "Chris Wilson - 2015  \n")
@@ -65,6 +75,7 @@ distro = platform.dist()
 #distro = platform.linux_distribution()
 #distro = os.system("uname -v")
 
+#NOTE - This is untested
 if distro == ("Debian", "*", "*"):
     distro = "debian"
 elif distro == ("Arch", "*", "*"):
@@ -86,7 +97,7 @@ else:
     elif pick_distro == 3:
         distro = "ubuntu"
     else:
-        distro = "unknown"
+        distro = "linux"
 
 #Download dependencies
 print "Downloading Dependencies..."
@@ -102,9 +113,10 @@ print "Download Complete!\n"
 
         
 #Make dir for temp files
-print "Initializing Temporary Directory..."
+print "Initializing Temporary Directory...",
 mkdir(tmp_dir)
 os.chdir(tmp_dir)
+print "Done."
 
 #Get source files via git
 print "Downloading Source..."
@@ -151,24 +163,13 @@ print "Setting Background"
 mkdir("%s/wallpapers" %config_dir)
 os.system("cp %s/wallpapers/* %s" %(installer_dir, wallpapers_dir))
 
-if distro == "debian":
-    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc_file.write("feh --bg-fill %s/wallpapers/debian.jpg &" %config_dir)
-elif distro == "arch":
-    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc.write("feh --bg-fill %s/wallpapers/arch.jpg &" %confif_dir)
-elif distro == "ubuntu":
-    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc_file.write("feh --bg-fill %s/wallpapers/ubuntu.jpg &" %config_dir)
-else:
-    with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc_file.write("feh --bg-fill %s/wallpapers/linux.jpg &" %config_dir)
+set_bg(distro)
 print "Background Set!\n"
 
 print "BSPWM Installed Successfully!\n"
 
 install_panel = input("Would you like to install a panel? (y/n) ")
-if install_panel != 'y'
+if install_panel != "y":
     end_install()  
     
 pick_panel = input("Select panel:\n"
@@ -201,16 +202,19 @@ os.system("cp %s/panel_color %s/panel_color" %(panel_config_dir, panel_scripts_d
 os.system("chmod +x %s/panel %s/panel_bar" 
         %(panel_scripts_dir, panel_scripts_dir))
 
-# LemonBoy's bar changed its name to lemonbar. This does not yet show 
-# in the default panel config and needs to be changed
+#If we built the older version of bspwm to workaround the xserver bug,
+#we need to update the default sxhkdrc to launch 'lemonbar' instead of 'bar'
+replace_text("%s/panel" %panel_scripts_dir, " bar ", " lemonbar ")
+
 
 #Start panel with bspwm
-open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
         bspwmrc_file.write("panel &" %config_dir)
 
 #Set Environment Variables
 os.eviron["PATH"] += os.pathsep + panel_scripts_dir
 os.eviron["PANEL_FIFO"] = panel_fifo_path
+
 print "System Deployment Complete!"
 
 print "Panel Sucessfully Installed!"
@@ -218,7 +222,7 @@ print "Panel Sucessfully Installed!"
 #TODO - get current term from sxhkdrc
 print "The current default terminal is urxvt."
 install_panel = input("Would you like to install a different terminal? (y/n) ")
-if install_panel != 'y'
+if install_panel != "y":
     end_install()  
 
 pick_term = input("Select Terminal for Installation:\n"
@@ -227,6 +231,7 @@ pick_term = input("Select Terminal for Installation:\n"
                         "3.) xfce\n"
                         "4.) rxvt\n"
                         "> ")
+
 #TODO - make this work for other distros
 if pick_term == 1:
     os.system("sudo %s xterm" %debian_pm)
@@ -236,8 +241,11 @@ elif pick_term == 3:
     os.system("sudo %s xfce" %debian_pm)
 elif pick_term == 4:
     os.system("sudo %s rxvt" %debian_pm)
-else    
+else:    
     end_install()
+
+#Modify sxhkd to use new terminal
+#TODO - make func to do this and call above
 
 end_install()
 
