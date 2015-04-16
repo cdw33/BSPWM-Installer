@@ -1,4 +1,4 @@
-##################################################
+77##################################################
 #                                                #
 #            BSPWM Installation Script           #
 #                                                #
@@ -145,14 +145,14 @@ if pick_panel == 2:
 
 #make/update file .xinitrc
 
-with open("%s/.xinitrc" %home, "w") as init_file:
+with open("%s/.xinitrc" %home, "a") as init_file:
     init_file.write("sxhkd &\n exec bspwm")
 print "System Deployment Complete!\n"
 
 #Set Background
 
-#with open("%s/.xinitrc" %home, "w") as init_file:
-#    init_file.write("feh --bg-fill %s/.config/wallpapers/debian.jpg")
+with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+    bspwmrc_file.write("feh --bg-fill %s/wallpapers/debian.jpg" %config_dir)
 
 #Cleanup Files
 print "Cleaning Up..."
