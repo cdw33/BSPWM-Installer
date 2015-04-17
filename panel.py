@@ -157,10 +157,10 @@ with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
 #os.eviron["PATH"] += os.pathsep + panel_scripts_dir
 #os.eviron["PANEL_FIFO"] = panel_fifo_path
 with open("%s/.profile" %home, "a") as profile_file:
-    if not find_string("%s/.profile" %home,"PANEL_FIFO"):
-        profile_file.write("export PATH=$PATH:%s\n"
-		           "export PANEL_FIFO=$PANEL_FIFO%s"
-                           %(panel_scripts_dir, panel_fifo_dir))
+#    if not find_string("%s/.profile" %home,"PANEL_FIFO"):
+    profile_file.write("export PATH=$PATH:%s\n"
+	               "export PANEL_FIFO=$PANEL_FIFO%s"
+                       %(panel_scripts_dir, panel_fifo_dir))
 
 #update envars
 os.system("source %s/.profile" %home)
