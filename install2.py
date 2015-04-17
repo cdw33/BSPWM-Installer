@@ -27,14 +27,14 @@ home = expanduser("~")
 tmp_dir = "/tmp/bspwm_installer/"
 
 config_dir = "%s/.config" %home
-panel_scripts_dir = "%s/.config/panel/" %home
+panel_scripts_dir = "%s/.config/panel" %home
 bspwm_scripts_dir = "%s/.config/bspwm/" %home
 sxhkd_scripts_dir = "%s/.config/sxhkd/" %home
 wallpapers_dir = "%s/wallpapers" %config_dir
 bspwmrc_dir = "bspwm/examples/bspwmrc"
 sxhkdrc_dir = "bspwm/examples/sxhkdrc"
-panel_config_dir = "bspwm/examples/panel/"
-panel_fifo = "/tmp/panel-fifo/"
+panel_config_dir = "bspwm/examples/panel"
+panel_fifo_dir = "/tmp/panel-fifo/"
 
 #Package Managers
 arch_pm = "pacman -S"
@@ -65,7 +65,7 @@ def replace_text(file,search_text,replace_text):
 
 def set_bg(distro):
     with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc_file.write("feh --bg-fill %s/wallpapers/%s.jpg &" %(config_dir, distro))
+        bspwmrc_file.write("feh --bg-fill %s/wallpapers/%s.jpg &\n" %(config_dir, distro))
 
 print ("\nBSPWM Installer v0.1 \n"
        "Chris Wilson - 2015  \n")
@@ -137,7 +137,7 @@ os.system("make -C sxhkd/ && sudo make -C sxhkd/ install")
 print "Build Complete!\n"
 
 #Deploy Files to System
-print "Deploying System..."
+print "Deploying System...",
 
 #make dirs for config files
 mkdir(config_dir)
@@ -156,26 +156,26 @@ os.system("chmod +x %s" %bspwmrc_dir)
 #make/update file .xinitrc
 with open("%s/.xinitrc" %home, "a") as init_file:
     init_file.write("sxhkd &\n exec bspwm")
-print "System Deployment Complete!\n"
+print "Done\n"
 
 #Set Background
-print "Setting Background"
+print "Setting Background...",
 mkdir("%s/wallpapers" %config_dir)
 os.system("cp %s/wallpapers/* %s" %(installer_dir, wallpapers_dir))
 
 set_bg(distro)
-print "Background Set!\n"
+print "Done\n"
 
 print "BSPWM Installed Successfully!\n"
 
-install_panel = input("Would you like to install a panel? (y/n) ")
+install_panel = raw_input("Would you like to install a panel? (y/n) ")
 if install_panel != "y":
     end_install()  
     
-pick_panel = input("Select panel:\n"
-                   "1.) None\n"
-                   "2.) LemonBar\n"
-                   "> ")
+print("Select panel:\n"
+      "1.) None\n"
+      "2.) LemonBar")
+pick_panel = raw_input("> ")
 
 #Download dependencies
 print "Downloading Source..."
@@ -196,7 +196,7 @@ mkdir(panel_fifo_dir)
 
 os.system("cp %s/panel %s/panel" %(panel_config_dir, panel_scripts_dir))
 os.system("cp %s/panel_bar %s/panel_bar" %(panel_config_dir, panel_scripts_dir))
-os.system("cp %s/panel_color %s/panel_color" %(panel_config_dir, panel_scripts_dir))  
+os.system("cp %s/panel_colors %s/panel_colors" %(panel_config_dir, panel_scripts_dir))  
 
 #make panel & panel_bar execuatable
 os.system("chmod +x %s/panel %s/panel_bar" 
@@ -209,11 +209,18 @@ replace_text("%s/panel" %panel_scripts_dir, " bar ", " lemonbar ")
 
 #Start panel with bspwm
 with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc_file.write("panel &" %config_dir)
+        bspwmrc_file.write("panel &\n")
 
 #Set Environment Variables
-os.eviron["PATH"] += os.pathsep + panel_scripts_dir
-os.eviron["PANEL_FIFO"] = panel_fifo_path
+#os.eviron["PATH"] += os.pathsep + panel_scripts_dir
+#os.eviron["PANEL_FIFO"] = panel_fifo_path
+with open("%s/.profile" %home, "a") as profile_file:
+        profile_file.write("export PATH=$PATH:%s\n"
+	   	 "export PANEL_FIFO=$PANEL_FIFO%s"
+                 %(panel_scripts_dir, panel_fifo_dir))
+
+#update envars
+os.system("source %s/.profile" %home)
 
 print "System Deployment Complete!"
 
@@ -221,9 +228,9 @@ print "Panel Sucessfully Installed!"
 
 #TODO - get current term from sxhkdrc
 print "The current default terminal is urxvt."
-install_panel = input("Would you like to install a different terminal? (y/n) ")
+install_panel = raw_input("Would you like to install a different terminal? (y/n) ")
 if install_panel != "y":
-    end_install()  
+    end_install()
 
 pick_term = input("Select Terminal for Installation:\n"
                         "1.) xterm\n"
