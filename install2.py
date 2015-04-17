@@ -58,10 +58,16 @@ def cleanup():
     print "Done"
 
 def replace_text(file,search_text,replace_text):
-    for line in fileinput.input(file, inplace=1):
+    for line in fileinput.FileInput(file, inplace=1):
         if search_text in line:
             line = line.replace(search_text,replace_text)
         sys.stdout.write(line)
+
+def find_string(file, search_str):
+    for line in fileinput.FileInput(file, inplace=1):
+	if search_str in line:
+	    return 1
+    return 0	
 
 def set_bg(distro):
     with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
@@ -154,8 +160,9 @@ os.system("chmod +x %s" %bspwmrc_dir)
 
 
 #make/update file .xinitrc
-with open("%s/.xinitrc" %home, "a") as init_file:
-    init_file.write("sxhkd &\n exec bspwm")
+if not find_string("%s/.xinitrc" %home, "sxhkd"):
+    with open("%s/.xinitrc" %home, "a") as init_file:
+        init_file.write("sxhkd &\nexec bspwm")
 print "Done\n"
 
 #Set Background
@@ -184,13 +191,12 @@ os.system("git clone %s" %sutils_git_dir);
 os.system("git clone %s" %lemonbar_git_dir);
 print "Download Complete!\n"
 
-print "Building Source..."
+print "Building Source...",
 os.system("make -C sutils/ && sudo make -C sutils/ install")
 os.system("make -C xtitle/ && sudo make -C xtitle/ install")
 os.system("make -C bar/ && sudo make -C bar/ install")
-print "Build Complete!"
-
-print "Deploying System..."
+print "Done\n"
+print "Deploying System...",
 mkdir(panel_scripts_dir)
 mkdir(panel_fifo_dir)
 
@@ -214,15 +220,15 @@ with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
 #Set Environment Variables
 #os.eviron["PATH"] += os.pathsep + panel_scripts_dir
 #os.eviron["PANEL_FIFO"] = panel_fifo_path
-with open("%s/.profile" %home, "a") as profile_file:
+if not find_string("%s/.profile" %home,"PANEL_FIFO"):
+    with open("%s/.profile" %home, "a") as profile_file:
         profile_file.write("export PATH=$PATH:%s\n"
-	   	 "export PANEL_FIFO=$PANEL_FIFO%s"
-                 %(panel_scripts_dir, panel_fifo_dir))
+		           "export PANEL_FIFO=$PANEL_FIFO%s"
+                           %(panel_scripts_dir, panel_fifo_dir))
 
 #update envars
 os.system("source %s/.profile" %home)
-
-print "System Deployment Complete!"
+print "Done\n"
 
 print "Panel Sucessfully Installed!"
 
@@ -255,56 +261,3 @@ else:
 #TODO - make func to do this and call above
 
 end_install()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
