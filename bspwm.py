@@ -58,12 +58,14 @@ def replace_text(file,search_text,replace_text):
     for line in fileinput.FileInput(file, inplace=1):
         if search_text in line:
             line = line.replace(search_text,replace_text)
-        sys.stdout.write(line)
+            sys.stdout.write(line)
 
 def find_string(file, search_str):
     for line in fileinput.FileInput(file, inplace=1):
     	if search_str in line:
+		fileinput.close()
         	return 1
+    fileinput.close()
     return 0    
 
 def set_bg(distro):
@@ -154,18 +156,23 @@ os.system("cp %s %s" %(sxhkdrc_dir, sxhkd_scripts_dir))
 #make bspwmrc executable
 os.system("chmod +x %s" %bspwmrc_dir)
 
-#make/update file .xinitrc
-#with open("%s/.xinitrc" %home, "a") as init_file:
-#    #if not find_string("%s/.xinitrc" %home, "sxhkd"):
-#    for line in fileinput.FileInput(init_file, inplace=1):
-#    if "sxhkd" in line:
-#        found=1
-#    if not found:
-#    init_file.write("sxhkd &\nexec bspwm")
-
-with open("%s/.xinitrc" %home, "a") as init_file:
-    init_file.write("sxhkd &\nexec bspwm")
-
+if os.path.exists("%s/.xinitrc" %home):
+    #check if exec statement already exists
+    print(".xinitrc exists, checking if it is already populated")
+    if not find_string("%s/.xinitrc" %home, "sxhkd"):
+	print("exec not found in .xinitrc, populating")
+	with open("%s/.xinitrc" %home, "a") as init_file:
+            init_file.write("\nsxhkd &\nexec bspwm")
+	    init_file.clos()
+    else:
+	print "exec found in .xinitrc, skipping"
+else:
+    print ".xinitrc does not exist, creating and populating"
+    with open("%s/.xinitrc" %home, "a") as init_file:
+        init_file.write("\nsxhkd &\nexec bspwm")
+	init_file.close()
+   
+sys.exit()
 print "Done\n"
 
 #Set Background
