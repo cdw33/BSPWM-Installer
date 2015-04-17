@@ -62,8 +62,8 @@ def replace_text(file,search_text,replace_text):
 
 def find_string(file, search_str):
     for line in fileinput.FileInput(file, inplace=1):
-    if search_str in line:
-        return 1
+    	if search_str in line:
+        	return 1
     return 0    
 
 def set_bg(distro):
