@@ -159,10 +159,26 @@ os.system("cp %s %s" %(sxhkdrc_dir, sxhkd_scripts_dir))
 os.system("chmod +x %s" %bspwmrc_dir)
 
 
+
+
+
+
+
 #make/update file .xinitrc
-if not find_string("%s/.xinitrc" %home, "sxhkd"):
-    with open("%s/.xinitrc" %home, "a") as init_file:
-        init_file.write("sxhkd &\nexec bspwm")
+with open("%s/.xinitrc" %home, "a") as init_file:
+    #if not find_string("%s/.xinitrc" %home, "sxhkd"):
+    for line in fileinput.FileInput(init_file, inplace=1):
+	if "sxhkd" in line:
+	    found=1
+    if not found:
+	init_file.write("sxhkd &\nexec bspwm")
+
+
+
+
+
+
+
 print "Done\n"
 
 #Set Background
@@ -220,8 +236,8 @@ with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
 #Set Environment Variables
 #os.eviron["PATH"] += os.pathsep + panel_scripts_dir
 #os.eviron["PANEL_FIFO"] = panel_fifo_path
-if not find_string("%s/.profile" %home,"PANEL_FIFO"):
-    with open("%s/.profile" %home, "a") as profile_file:
+with open("%s/.profile" %home, "a") as profile_file:
+    if not find_string("%s/.profile" %home,"PANEL_FIFO"):
         profile_file.write("export PATH=$PATH:%s\n"
 		           "export PANEL_FIFO=$PANEL_FIFO%s"
                            %(panel_scripts_dir, panel_fifo_dir))
