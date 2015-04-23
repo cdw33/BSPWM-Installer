@@ -178,6 +178,7 @@ print "Done\n"
 #Set Background
 print "Setting Background...",
 mkdir("%s/wallpapers" %config_dir)
+#TODO - change this to only copy distro WP
 os.system("cp %s/wallpapers/* %s" %(installer_dir, wallpapers_dir))
 
 set_bg(distro)
