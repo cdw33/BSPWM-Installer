@@ -32,6 +32,10 @@ sxhkd_scripts_dir = "%s/.config/sxhkd/" %home
 wallpapers_dir = "%s/wallpapers" %config_dir
 bspwmrc_dir = "bspwm/examples/bspwmrc"
 sxhkdrc_dir = "bspwm/examples/sxhkdrc"
+xinitrc_dir = "%s/.xinitrc" %home
+
+#Strings
+xinitrc_exec_bspwm = "sxhkd &\nexec bspwm"
 
 #Package Managers
 arch_pm = "pacman -S"
@@ -70,7 +74,21 @@ def find_string(file, search_str):
 
 def set_bg(distro):
     with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc_file.write("feh --bg-fill %s/wallpapers/%s.jpg &\n" %(config_dir, distro))
+        bspwmrc_file.write("\nfeh --bg-fill %s/wallpapers/%s.jpg &\n" %(config_dir, distro))
+
+def write_string_to_file(file_loc, write_str):
+	string_exists = 0
+	search_str = write_str.split('\n') #split up multi line strings to ease searching
+	if os.path.isfile('%s' %file_loc):
+		with open('%s' %file_loc, 'r') as xinitrc:
+			#make sure the given string does not already exist in the file
+			for line in xinitrc:		
+				if "%s" %search_str[0] in line:
+					string_exists = 1
+	#append string to file
+	with open('%s' %file_loc, 'a') as xinitrc:
+		if not string_exists:
+			xinitrc.write("\n%s\n" %write_str)
 
 print ("\nBSPWM Installer v0.1 \n"
        "Chris Wilson - 2015  \n")
@@ -156,22 +174,9 @@ os.system("cp %s %s" %(sxhkdrc_dir, sxhkd_scripts_dir))
 #make bspwmrc executable
 os.system("chmod +x %s" %bspwmrc_dir)
 
-if os.path.exists("%s/.xinitrc" %home):
-    #check if exec statement already exists
-    print(".xinitrc exists, checking if it is already populated")
-    if not find_string("%s/.xinitrc" %home, "sxhkd"):
-	print("exec not found in .xinitrc, populating")
-	with open("%s/.xinitrc" %home, "a") as init_file:
-            init_file.write("\nsxhkd &\nexec bspwm")
-	    init_file.clos()
-    else:
-	print "exec found in .xinitrc, skipping"
-else:
-    print ".xinitrc does not exist, creating and populating"
-    with open("%s/.xinitrc" %home, "a") as init_file:
-        init_file.write("\nsxhkd &\nexec bspwm")
-	init_file.close()
-   
+#write exec script to ~/.xinitrc 
+write_string_to_file(xinitrc_dir, xinitrc_exec_bspwm)
+  
 sys.exit()
 print "Done\n"
 

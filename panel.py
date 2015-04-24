@@ -35,6 +35,12 @@ bspwmrc_dir = "%s/bspwm/examples/bspwmrc" %tmp_dir
 sxhkdrc_dir = "%s/bspwm/examples/sxhkdrc" %tmp_dir
 panel_config_dir = "bspwm/examples/panel"
 panel_fifo_dir = "/tmp/panel-fifo/"
+profile_dir = "%s/.profile" %home
+
+#strings
+path_env = "export PATH=$PATH:/home/chris/.config/panel"
+panel_fifo_env = 'export PANEL_FIFO="/tmp/panel-fifo"'
+panel_str = "panel &"
 
 #Package Managers
 arch_pm = "pacman -S"
@@ -72,6 +78,23 @@ def find_string(file, search_str):
 def set_bg(distro):
     with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
         bspwmrc_file.write("feh --bg-fill %s/wallpapers/%s.jpg &\n" %(config_dir, distro))
+
+def update_env():
+    os.system("source %s/.profile" %home)
+
+def write_string_to_file(file_loc, write_str):
+	string_exists = 0
+	search_str = write_str.split('\n') #split up multi line strings to ease searching
+	if os.path.isfile('%s' %file_loc):
+		with open('%s' %file_loc, 'r') as xinitrc:
+			#make sure the given string does not already exist in the file
+			for line in xinitrc:		
+				if "%s" %search_str[0] in line: 
+					string_exists = 1
+	#append string to file
+	with open('%s' %file_loc, 'a') as xinitrc:
+		if not string_exists:
+			xinitrc.write("\n%s\n" %write_str)
 
 print ("\nBSPWM Installer v0.1 \n"
        "Chris Wilson - 2015  \n")
@@ -134,7 +157,7 @@ os.system("make -C bar/ && sudo make -C bar/ install")
 print "Done\n"
 print "Deploying System...",
 mkdir(panel_scripts_dir)
-mkdir(panel_fifo_dir)
+#mkdir(panel_fifo_dir)
 
 os.system("cp %s/panel %s/panel" %(panel_config_dir, panel_scripts_dir))
 os.system("cp %s/panel_bar %s/panel_bar" %(panel_config_dir, panel_scripts_dir))
@@ -150,20 +173,27 @@ replace_text("%s/panel" %panel_scripts_dir, " bar ", " lemonbar ")
 
 
 #Start panel with bspwm
-with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
-        bspwmrc_file.write("panel &\n")
+#with open("%s/bspwmrc" %bspwm_scripts_dir, "a") as bspwmrc_file:
+#        bspwmrc_file.write("panel &\n")
+write_string_to_file("%s/bspwmrc" %bspwm_scripts_dir, panel_str)
 
-#Set Environment Variables
-#os.eviron["PATH"] += os.pathsep + panel_scripts_dir
-#os.eviron["PANEL_FIFO"] = panel_fifo_path
-with open("%s/.profile" %home, "a") as profile_file:
-#    if not find_string("%s/.profile" %home,"PANEL_FIFO"):
-    profile_file.write("export PATH=$PATH:%s\n"
-	               "export PANEL_FIFO=$PANEL_FIFO%s"
-                       %(panel_scripts_dir, panel_fifo_dir))
+
+##Set Environment Variables
+##os.eviron["PATH"] += os.pathsep + panel_scripts_dir
+##os.eviron["PANEL_FIFO"] = panel_fifo_path
+#with open("%s/.profile" %home, "a") as profile_file:
+##    if not find_string("%s/.profile" %home,"PANEL_FIFO"):
+#    profile_file.write("export PATH=$PATH:%s\n"
+#	               "export PANEL_FIFO=$PANEL_FIFO%s"
+#	                       %(panel_scripts_dir, panel_fifo_dir))
+
+write_string_to_file(profile_dir, path_env)
+write_string_to_file(profile_dir, panel_fifo_env)
 
 #update envars
-os.system("source %s/.profile" %home)
+#os.system("source %s/.profile" %home)
+update_env()
+
 print "Done\n"
 
 print "Panel Sucessfully Installed!"
