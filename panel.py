@@ -80,7 +80,8 @@ def set_bg(distro):
         bspwmrc_file.write("feh --bg-fill %s/wallpapers/%s.jpg &\n" %(config_dir, distro))
 
 def update_env():
-    os.system("source %s/.profile" %home)
+    #os.system("source %s/.profile" %home)
+    os.system(". %s/.profile" %home)
 
 def write_string_to_file(file_loc, write_str):
 	string_exists = 0
@@ -143,6 +144,18 @@ print("Select panel:\n"
 pick_panel = raw_input("> ")
 
 #Download dependencies
+#Download dependencies
+print "Downloading Dependencies..."
+if pick_distro == 1: #'-qq' quiet
+    os.system("sudo %s gcc git make libasound2 libasound2-dev xcb libxcb-util0-dev "
+              "libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev "
+              "libxcb-keysyms1-dev libxcb-xinerama0-dev xorg "
+              "suckless-tools rxvt-unicode feh" %debian_pm)
+elif pick_distro == 2:
+    os.system("sudo %s libxcb xcb-util xcb-util-keysyms "
+              "xcb-util-wm" %arch_pm)
+print "Download Complete!\n"
+
 print "Downloading Source..."
 os.system("git clone %s" %bspwm_git_dir);
 os.system("git clone %s" %xtitle_git_dir);
@@ -179,24 +192,22 @@ write_string_to_file("%s/bspwmrc" %bspwm_scripts_dir, panel_str)
 
 
 ##Set Environment Variables
-##os.eviron["PATH"] += os.pathsep + panel_scripts_dir
-##os.eviron["PANEL_FIFO"] = panel_fifo_path
-#with open("%s/.profile" %home, "a") as profile_file:
-##    if not find_string("%s/.profile" %home,"PANEL_FIFO"):
-#    profile_file.write("export PATH=$PATH:%s\n"
-#	               "export PANEL_FIFO=$PANEL_FIFO%s"
-#	                       %(panel_scripts_dir, panel_fifo_dir))
-
 write_string_to_file(profile_dir, path_env)
 write_string_to_file(profile_dir, panel_fifo_env)
 
 #update envars
 #os.system("source %s/.profile" %home)
-update_env()
+#update_env()
+#os.system(path_env)
+#os.system(panel_fifo_env)
+os.environ["PATH"] += os.pathsep + "%s" %panel_scripts_dir
+
 
 print "Done\n"
 
 print "Panel Sucessfully Installed!"
+
+print "NOTE: After installation you must restart or run 'source ~/.profile' for changes to take effect!"
 
 #TODO - get current term from sxhkdrc
 print "The current default terminal is urxvt."

@@ -125,7 +125,7 @@ else:
 #Download dependencies
 print "Downloading Dependencies..."
 if pick_distro == 1: #'-qq' quiet
-    os.system("sudo %s gcc git make libasound2 xcb libxcb-util0-dev "
+    os.system("sudo %s gcc git make libasound2 libasound2-dev xcb libxcb-util0-dev "
               "libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev "
               "libxcb-keysyms1-dev libxcb-xinerama0-dev xorg "
               "suckless-tools rxvt-unicode feh" %debian_pm)
