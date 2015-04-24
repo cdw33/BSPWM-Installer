@@ -5,6 +5,9 @@ TODO
 	remove .config/bspwm & sxhkd files & folders
 	remove exec args from .xinitrc
 
+-make backups of any file being modified
+
+
 
 
 BUGS
