@@ -8,5 +8,9 @@ TODO
 
 
 BUGS
--script doest not check to see if .xinitrc is already populated 
- and appends the same commands on every run 
+    bspwm.py
+	wallpapers dir does not appear to be copying to .config/wallpapers
+	feh script not showing in bspwmrc
+
+    panel.py
+	
